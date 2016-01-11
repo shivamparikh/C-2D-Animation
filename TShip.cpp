@@ -84,6 +84,7 @@ void TShip::translate(double dx, double dy){
     lWing.setXPos(xPos-radius-wWidth);
     lWing.setYPos(yPos-radius);
 }
+//Draw the Tie Fighter Ships
 void TShip::draw(unsigned char ** buffer, int px, int pz){
     Color col = shipColor;
     int minX = 3*(xPos-wWidth-radius-1);

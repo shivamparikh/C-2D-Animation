@@ -280,6 +280,7 @@ int main(int argc, char * argv[]){
         //They travel a measured distance from the death star to the moon
         //This improves the accuracy of the shots.
         if(sw >= (pCycle/4) && dStarExists == true){
+            //If it is at the peak of its orbit
             if((sw-(pCycle/4))%(pCycle) == 0){
                 moonScale = (dxPos-moon.getXPos())/(moon.getYPos()-dyPos);
                 moonShotSpeed = (dxPos-moon.getXPos())/pCycle;

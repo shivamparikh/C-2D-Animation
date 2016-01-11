@@ -74,6 +74,7 @@ void Rect::disappear(){
     xPos = -1*length;
     yPos = -1*width;
 }
+//To Draw All Rectangles
 void Rect::draw(unsigned char ** buffer, int px, int pz){
     Color col = rectColor;
     int minX = 3*(xPos-1);

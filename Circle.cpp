@@ -68,6 +68,7 @@ void Circle::disappear(){
     xPos = -1*radius;
     yPos = -1*radius;
 }
+//To draw most all Circles
 void Circle::draw(unsigned char ** buffer, int px, int pz){
     Color col = circleColor;
     //Calculate minima and maxima for Predictive Pixel Method
@@ -104,6 +105,7 @@ void Circle::drawS(unsigned char ** buffer, int px, int pz){
         }
     }
 }
+//To Draw Circles With Rings
 void Circle::drawR(unsigned char ** buffer, int px, int pz, int rings){
     Color col = circleColor;
     int minX = 3*(xPos-radius-1-(5*rings));
