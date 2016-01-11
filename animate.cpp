@@ -1,4 +1,4 @@
-//  animate.cpp is the file name.
+//  animateT.cpp is the file name.
 //  currently the command line arguments include the following
 //  currently moving to working with the config_data.txt file format
 //  Author: Shivam Parikh, Period 4, Due 1/8/15
@@ -28,11 +28,6 @@ using namespace std;
 const double RADCON = M_PI/180;
 
 //function definitions
-void drawCircle(unsigned char ** buffer, Circle cir, int px, int pz);
-void drawStars(unsigned char ** buffer, Circle cir, int px, int pz);
-void drawRect(unsigned char ** buffer, Rect rec, int px, int pz);
-void drawCirclewRings(unsigned char ** buffer, Circle cir, int px, int pz, int rings);
-void drawTShip(unsigned char ** buffer, TShip tie, int px, int pz);
 void write_bmp_header_file(ofstream& output_file, int px, int pz);
 int string_to_int(string s);
 string makeName(int num);
@@ -47,6 +42,7 @@ int main(int argc, char * argv[]){
     string dO;
     vector<double> data;
     time_t sTime = time(0);
+    //Take Inputs from the configurations file
     while(!in_config.fail()){
         in_config >> blank >> dO;
         data.push_back(string_to_int(dO));
@@ -101,16 +97,16 @@ int main(int argc, char * argv[]){
     Color plOther(199, 21, 133);
     Color spaceShips(249, 100, 16);
     Color mOMoon(127, 255, 212);
-    Circle moon(0, 0, data[23], moonCol);
+    Circle moon(0, 0, data[32], moonCol);
     Circle sun(data[3], data[4], data[8], yellow);
     Circle deathStar(dxPos, dyPos, dRad, gray);
     Circle planet(0, 0, data[12], blue);
     Circle alderan(data[16]+5, dyPos, data[16], alderanCol);
     Circle otherPlanet(0, 0, data[11], plOther);
     Circle rebelShot(0, 0, data[31], red);
-    TShip starShip(0, 0, data[22], data[32], spaceShips);
-    TShip starShip1(0, 0, data[22], data[32], spaceShips);
-    TShip starShip2(0, 0, data[22], data[32], spaceShips);
+    TShip starShip(0, 0, data[22], data[23], spaceShips);
+    TShip starShip1(0, 0, data[22], data[23], spaceShips);
+    TShip starShip2(0, 0, data[22], data[23], spaceShips);
     Circle moonOfMoon(0, 0, data[28], mOMoon);
     Rect deathShotR((dxPos-dRad), (dyPos-20), 40, data[24], gShot);
     
@@ -142,10 +138,10 @@ int main(int argc, char * argv[]){
         xyz.setRadius((rand()%(3))+2);
         xyz.setXPos((rand()%(px-1)));
         xyz.setYPos((rand()%(pz-1)));
-        drawStars(backBuf, xyz, px, pz);
+        xyz.drawS(backBuf, px, pz);
     }
     //draw the sun in the background as it is stationary
-    drawCircle(backBuf, sun, px, pz);
+    sun.draw(backBuf, px, pz);
     
     double fTime = difftime(time(0), sTime);
     cout << fTime << " seconds have passed in making the sun and all of the stars for the program.\n";
@@ -197,13 +193,13 @@ int main(int argc, char * argv[]){
 
         //generate the planet that will later be destroyed by the death star.
         if(deathShotR.getXPos() >= (alderan.getXPos())){
-            drawCircle(buffer, alderan, px, pz);
+            alderan.draw(buffer, px, pz);
         }
         else alderanHit = true;
         
         //The Laser from the Death Star which is a rectangle.
         if(sw > (frames/12) && !alderanHit){
-            drawRect(buffer, deathShotR, px, pz);
+            deathShotR.draw(buffer, px, pz);
             int temp = deathShotR.getLength();
             temp += (data[17]);
             deathShotR.setLength(temp);
@@ -222,7 +218,7 @@ int main(int argc, char * argv[]){
         deg += data[15];
         planet.setXPos(pxPos);
         planet.setYPos(pyPos);
-        drawCircle(buffer, planet, px, pz);
+        planet.draw(buffer, px, pz);
         
         //SpaceShip Squadron follows elliptical orbit between the beginning of the second planet and the death star
         if(sdeg >= 0){
@@ -230,13 +226,13 @@ int main(int argc, char * argv[]){
             syPos = (eyStart) + eY*(sin(sdeg*RADCON));
             starShip.setXPos(sxPos);
             starShip.setYPos(syPos);
-            starShip1.setXPos(sxPos+data[22]+10);
-            starShip1.setYPos(syPos+data[22]+10);
-            starShip2.setXPos(sxPos-data[22]-10);
-            starShip2.setYPos(syPos+data[22]+10);
-            drawTShip(buffer, starShip, px, pz);
-            drawTShip(buffer, starShip1, px, pz);
-            drawTShip(buffer, starShip2, px, pz);
+            starShip1.setXPos(sxPos+data[22]+15);
+            starShip1.setYPos(syPos+data[22]+15);
+            starShip2.setXPos(sxPos-data[22]-15);
+            starShip2.setYPos(syPos+data[22]+15);
+            starShip.draw(buffer, px, pz);
+            starShip1.draw(buffer, px, pz);
+            starShip2.draw(buffer, px, pz);
             sdeg -= data[21];
         }
         //The three SpaceShips end their elliptical orbit and enter the death star after moving for 180 degrees
@@ -244,16 +240,16 @@ int main(int argc, char * argv[]){
             starShip.translate(0, -4*(data[21]));
             starShip1.translate(0, -4*(data[21]));
             starShip2.translate(0, -4*(data[21]));
-            drawTShip(buffer, starShip, px, pz);
-            drawTShip(buffer, starShip1, px, pz);
-            drawTShip(buffer, starShip2, px, pz);
+            starShip.draw(buffer, px, pz);
+            starShip1.draw(buffer, px, pz);
+            starShip2.draw(buffer, px, pz);
         }
         //2 SpaceShips Escape from the Death Star, the Third One remains trying to solve the issue at hand.
         else if(starShip2.getXPos() > 0){
             starShip1.translate(-10, 5);
             starShip2.translate(-10, 5);
-            drawTShip(buffer, starShip1, px, pz);
-            drawTShip(buffer, starShip2, px, pz);
+            starShip1.draw(buffer, px, pz);
+            starShip2.draw(buffer, px, pz);
         }
         
         //planet2 and its circular movement
@@ -262,14 +258,14 @@ int main(int argc, char * argv[]){
         pdeg += data[18];
         otherPlanet.setXPos(pTxPos);
         otherPlanet.setYPos(pTyPos);
-        drawCirclewRings(buffer, otherPlanet, px, pz, data[10]);
+        otherPlanet.drawR(buffer, px, pz, data[10]);
         
         //the moon and its circular movement around the first planet
         mxPos = planet.getXPos() + data[6]*(cos(mdeg*RADCON));
         myPos = planet.getYPos() + data[6]*(sin(mdeg*RADCON));
         moon.setXPos(mxPos);
         moon.setYPos(myPos);
-        drawCircle(buffer, moon, px, pz);
+        moon.draw(buffer, px, pz);
         mdeg += data[14];
         
         //the moon of the moon and its circular motion around the moon.
@@ -277,7 +273,7 @@ int main(int argc, char * argv[]){
         m1yPos = moon.getYPos() + data[30]*(sin(m1deg*RADCON));
         moonOfMoon.setXPos(m1xPos);
         moonOfMoon.setYPos(m1yPos);
-        drawCircle(buffer, moonOfMoon, px, pz);
+        moonOfMoon.draw(buffer, px, pz);
         m1deg += data[29];
         
         //Shots from the moon that fly every time its at the peak.
@@ -290,7 +286,7 @@ int main(int argc, char * argv[]){
                 rebelShot.setXPos(mxPos);
                 rebelShot.setYPos(myPos);
             }
-            drawCircle(buffer, rebelShot, px, pz);
+            rebelShot.draw(buffer, px, pz);
             rebelShot.translate(moonScale*moonShotSpeed, -1*moonShotSpeed);
             if(rebelShot.getXPos() >= dxPos){
                 rebelShot.disappear();
@@ -299,8 +295,8 @@ int main(int argc, char * argv[]){
         
         //The Death Star is a massive circle in the top right of the screen.
         //The circle has a shield until it is destroyed by the first laser from the moon.
-        if(sw < pCycle) drawCirclewRings(buffer, deathStar, px, pz, 1);
-        else drawCircle(buffer, deathStar, px, pz);
+        if(sw < pCycle) deathStar.drawR(buffer, px, pz, 1);
+        else deathStar.draw(buffer, px, pz);
         int dRad = deathStar.getRadius();
         if(sw > (3*frames)/4 && dRad >= 0){
             if(sw%2 == 0){
@@ -312,8 +308,10 @@ int main(int argc, char * argv[]){
             deathStar.setRadius(dRad);
             dStarExists = false;
             //Once the death star begins to shrink, the third spaceship can leave.
-            starShip.translate(-20, 5);
-            drawTShip(buffer, starShip, px, pz);
+            if(starShip.getXPos() > -10){
+                starShip.translate(-20, 5);
+                starShip.draw(buffer, px, pz);
+            }
         }
         //Refresh the degree values in the case that the number of degrees and frames exceeds the max size of
         //  an integer variable.
@@ -350,123 +348,11 @@ int main(int argc, char * argv[]){
     fTime = difftime(time(0), sTime);
     cout << (fTime - oldT) << " seconds to draw the frames.\n";
     cout << fTime << " seconds taken to complete the whole program.\n";
-    cout << (frames/(fTime - oldT)) << " frames drawn per second after stars drawn.\n";
-    cout << ((fTime - oldT)/frames) << " seconds to draw each frame.\n";
+    cout << ((frames/dFrames)/(fTime - oldT)) << " frames drawn per second after stars drawn.\n";
+    cout << ((fTime - oldT)/(frames/dFrames)) << " seconds to draw each frame.\n";
     return 0;
 }
 
-void drawCircle(unsigned char ** buffer, Circle cir, int px, int pz){
-    Color col = cir.getColor();
-    //Calculate minima and maxima for Predictive Pixel Method
-    int minX = 3*((int)cir.getXPos()-cir.getRadius()-1);
-    int maxX = 3*((int)cir.getXPos()+cir.getRadius()+1);
-    int maxY = cir.getYPos()+cir.getRadius()+1;
-    for(int i=0;i<maxY;i++){
-        for(int j=minX;j<maxX;j=j+3){
-            //distance formula implementation of the circle.
-            double distance = sqrt(pow((i-cir.getYPos()), 2) + (pow((j/3-cir.getXPos()), 2)));
-            if(distance <= cir.getRadius()){
-                buffer[i][j]=col.getB();
-                buffer[i][j+1]=col.getG();
-                buffer[i][j+2]=col.getR();
-            }
-        }
-    }
-}
-void drawStars(unsigned char ** buffer, Circle cir, int px, int pz){
-    //For massive drawings at the same time like in the case of the stars, only limit the x, not y
-    //Though it is slower, it makes it bypass the segmentation errors.
-    int minX = 3*((int)cir.getXPos()-cir.getRadius()-1);
-    int maxX = 3*((int)cir.getXPos()+cir.getRadius()+1);
-    Color col = cir.getColor();
-    for(int i=0;i<pz;i++){
-        for(int j=minX;j<maxX;j=j+3){
-            //distance formula implementation of the circle.
-            double distance = sqrt(pow((i-cir.getYPos()), 2) + (pow((j/3-cir.getXPos()), 2)));
-            if(distance <= cir.getRadius()){
-                buffer[i][j]=col.getB();
-                buffer[i][j+1]=col.getG();
-                buffer[i][j+2]=col.getR();
-            }
-        }
-    }
-}
-void drawRect(unsigned char ** buffer, Rect rec, int px, int pz){
-    Color col = rec.getColor();
-    int minX = 3*(rec.getXPos()-1);
-    int maxX = 3*(rec.getXPos() + rec.getLength() +1);
-    int maxY = rec.getYPos()+rec.getWidth()+1;
-    for(int i=0;i<maxY;i++){
-        for(int j=minX;j<maxX;j=j+3){
-            //Due to the Predictive Pixel Method, I only had to have one limit in the if statement.
-            if(i >= rec.getYPos()){
-                buffer[i][j]=col.getB();
-                buffer[i][j+1]=col.getG();
-                buffer[i][j+2]=col.getR();
-            }
-        }
-    }
-}
-void drawTShip(unsigned char ** buffer, TShip tie, int px, int pz){
-    Color col = tie.getColor();
-    int minX = 3*(tie.getXPos()-tie.getWidth()-tie.getRadius()-1);
-    int maxX = 3*(tie.getXPos()+tie.getWidth()+tie.getRadius()+1);
-    int maxY = tie.getYPos()+tie.getRadius()+1;
-    for(int i=0;i<maxY;i++){
-        for(int j=minX;j<maxX;j=j+3){
-            //body
-            double distance = sqrt(pow((i-tie.getYPos()), 2) + (pow((j/3-tie.getXPos()), 2)));
-            if(distance <= tie.getRadius()){
-                buffer[i][j]=col.getB();
-                buffer[i][j+1]=col.getG();
-                buffer[i][j+2]=col.getR();
-            }
-            //left Wing
-            Rect rec = tie.getLWing();
-            if(i >= rec.getYPos() && i <= rec.getYPos() + rec.getWidth() && j/3 >= rec.getXPos() && j/3 <= rec.getXPos() + rec.getLength()){
-                buffer[i][j]=col.getB();
-                buffer[i][j+1]=col.getG();
-                buffer[i][j+2]=col.getR();
-            }
-            //right Wing
-            Rect rec1 = tie.getRWing();
-            if(i >= rec1.getYPos() && i <= rec1.getYPos() + rec1.getWidth() && j/3 >= rec1.getXPos() && j/3 <= rec1.getXPos() + rec1.getLength()){
-                buffer[i][j]=col.getB();
-                buffer[i][j+1]=col.getG();
-                buffer[i][j+2]=col.getR();
-            }
-        }
-    }
-    
-}
-//Make the circle with rings
-void drawCirclewRings(unsigned char ** buffer, Circle cir, int px, int pz, int rings){
-    Color col = cir.getColor();
-    int minX = 3*(cir.getXPos()-cir.getRadius()-1-(5*rings));
-    int maxX = 3*(cir.getXPos()+cir.getRadius()+1+(5*rings));
-    int maxY = cir.getYPos()+cir.getRadius()+1+(5*rings);
-    for(int i=0;i<maxY;i++){
-        for(int j=minX;j<maxX;j=j+3){
-            double distance = sqrt(pow((i-cir.getYPos()), 2) + (pow((j/3-cir.getXPos()), 2)));
-            if(distance <= cir.getRadius()){
-                buffer[i][j]=col.getB();
-                buffer[i][j+1]=col.getG();
-                buffer[i][j+2]=col.getR();
-            }
-            //Define distance between planet and first ring, then continue through and add radius
-            //  Without adding pixels unless its in a certain area.
-            int extra = 5;
-            for(int k = 0; k < rings; k++){
-                if((cir.getRadius()+extra < distance) && (distance < cir.getRadius()+(extra+2))){
-                    buffer[i][j]=(col.getB());
-                    buffer[i][j+1]=(col.getG());
-                    buffer[i][j+2]=(col.getR());
-                }
-                extra += 4;
-            }
-        }
-    }
-}
 void write_bmp_header_file(ofstream& output_file, int px, int pz){
     unsigned short int bfType;
     bfType = 0x4D42;

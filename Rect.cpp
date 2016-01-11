@@ -74,4 +74,20 @@ void Rect::disappear(){
     xPos = -1*length;
     yPos = -1*width;
 }
+void Rect::draw(unsigned char ** buffer, int px, int pz){
+    Color col = rectColor;
+    int minX = 3*(xPos-1);
+    int maxX = 3*(xPos + length +1);
+    int maxY = yPos+width+1;
+    for(int i=0;i<maxY;i++){
+        for(int j=minX;j<maxX;j=j+3){
+            //Due to the Predictive Pixel Method, I only had to have one limit in the if statement.
+            if(i >= yPos){
+                buffer[i][j]=col.getB();
+                buffer[i][j+1]=col.getG();
+                buffer[i][j+2]=col.getR();
+            }
+        }
+    }
+}
 

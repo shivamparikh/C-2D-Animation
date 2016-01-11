@@ -22,6 +22,9 @@ public:
     void translate(double dx, double dy);
     void revolve(double deg, double xCenter, double yCenter);
     void disappear();
+    void draw(unsigned char ** buffer, int px, int pz);
+    void drawS(unsigned char ** buffer, int px, int pz);
+    void drawR(unsigned char ** buffer, int px, int pz, int rings);
 private:
     double xPos;
     double yPos;

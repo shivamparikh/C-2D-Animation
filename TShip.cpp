@@ -84,3 +84,35 @@ void TShip::translate(double dx, double dy){
     lWing.setXPos(xPos-radius-wWidth);
     lWing.setYPos(yPos-radius);
 }
+void TShip::draw(unsigned char ** buffer, int px, int pz){
+    Color col = shipColor;
+    int minX = 3*(xPos-wWidth-radius-1);
+    int maxX = 3*(xPos+wWidth+radius+1);
+    int maxY = yPos+radius+1;
+    for(int i=0;i<maxY;i++){
+        for(int j=minX;j<maxX;j=j+3){
+            //body
+            double distance = sqrt(pow((i-yPos), 2) + (pow((j/3-xPos), 2)));
+            if(distance <= radius){
+                buffer[i][j]=col.getB();
+                buffer[i][j+1]=col.getG();
+                buffer[i][j+2]=col.getR();
+            }
+            //left Wing
+            Rect rec = lWing;
+            if(i >= rec.getYPos() && i <= rec.getYPos() + rec.getWidth() && j/3 >= rec.getXPos() && j/3 <= rec.getXPos() + rec.getLength()){
+                buffer[i][j]=col.getB();
+                buffer[i][j+1]=col.getG();
+                buffer[i][j+2]=col.getR();
+            }
+            //right Wing
+            Rect rec1 = rWing;
+            if(i >= rec1.getYPos() && i <= rec1.getYPos() + rec1.getWidth() && j/3 >= rec1.getXPos() && j/3 <= rec1.getXPos() + rec1.getLength()){
+                buffer[i][j]=col.getB();
+                buffer[i][j+1]=col.getG();
+                buffer[i][j+2]=col.getR();
+            }
+        }
+    }
+    
+}

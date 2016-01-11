@@ -25,6 +25,7 @@ public:
     void setColor(Color shipColorInput);
     void setRadius(double radiusInput);
     void translate(double dx, double dy);
+    void draw(unsigned char ** buffer, int px, int pz);
 private:
     double xPos;
     double yPos;

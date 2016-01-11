@@ -23,6 +23,7 @@ public:
     void setColor(Color rectColorInput);
     void translate(double dx, double dy);
     void disappear();
+    void draw(unsigned char ** buffer, int px, int pz);
 private:
     double xPos;
     double yPos;
